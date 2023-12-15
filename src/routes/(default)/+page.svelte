@@ -1,8 +1,35 @@
-<script>
-	import {Hero} from "@components";
+<script lang="ts">
+	import type { PageData } from './$types';
+	import { Hero } from '@components';
+	import MissionVision from './MissionVision.svelte';
+	import DaedalusCommunity from './DaedalusCommunity.svelte';
+	import Projects from './Projects.svelte';
+	import Team from './Team.svelte';
+	import Events from './Events.svelte';
 
+	export let data: PageData;
+
+	const projects = data.projects;
+	const team = data.team;
 </script>
 
-<div class="bg-black relative h-screen w-full flex px-10 lg:px-20">
+<section id="hero">
 	<Hero />
-</div>
+</section>
+
+<section id="about">
+	<MissionVision />
+	<DaedalusCommunity />
+</section>
+
+<section id="projects">
+	<Projects {projects} />
+</section>
+
+<section id="team">
+	<Team {team} />
+</section>
+
+<section id="events">
+	<Events />
+</section>

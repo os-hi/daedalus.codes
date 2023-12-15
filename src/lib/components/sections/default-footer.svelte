@@ -1,9 +1,16 @@
 <script lang="ts">
-	import { AppBar } from '@skeletonlabs/skeleton';
+	import FooterSubscribe from './FooterSubscribe.svelte';
+	import FooterContentMain from './FooterContentMain.svelte';
+	import FooterContentMobile from './FooterContentMobile.svelte';
+	export let isDark = false;
 </script>
 
-<AppBar>
-	<svelte:fragment slot="lead">(icon)</svelte:fragment>
-	<svelte:fragment slot="trail">(actions)</svelte:fragment>
-	<svelte:fragment slot="headline">(headline)</svelte:fragment>
-</AppBar>
+<div>
+	<FooterSubscribe {isDark} />
+	<div class="hidden md:block">
+		<FooterContentMain />
+	</div>
+	<div class="block md:hidden">
+		<FooterContentMobile />
+	</div>
+</div>

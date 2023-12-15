@@ -1,9 +1,16 @@
 <script lang="ts">
-	import { Layout } from '@components';
+	import { Footer, Navbar } from '@components';
+	import { AppShell } from '@skeletonlabs/skeleton';
 </script>
 
-<Layout>
-	<div class="w-screen h-screen mx-auto">
+<AppShell scrollbarGutter="auto">
+	<svelte:fragment slot="header">
+		<Navbar />
+	</svelte:fragment>
+	<div class="mx-auto min-h-screen w-screen">
 		<slot />
 	</div>
-</Layout>
+	<svelte:fragment slot="pageFooter">
+		<Footer />
+	</svelte:fragment>
+</AppShell>
