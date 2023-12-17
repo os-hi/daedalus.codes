@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { Container } from '@components';
 	import emblaCarouselSvelte from 'embla-carousel-svelte';
-	// import Icon from '@iconify/svelte';
-	// import Autoplay from 'embla-carousel-autoplay';
-	import type { PageData } from './$types';
-
-	export let projects: PageData['projects'];
+	import { page } from '$app/stores';
+	import { CartaViewer, Carta } from 'carta-md';
+	const carta = new Carta();
 
 	let options = {
 		loop: false,
 		dragFree: true
 	};
 
-	// let plugins = [Autoplay()];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let plugins: any[] = [];
+
+	const dummyCardCount = 6;
 </script>
 
 <section class="py-32 dark:bg-surface-100-800-token">
@@ -25,34 +26,70 @@
 			</h2>
 			<span class="ms-5 hidden w-[60%] border-b-2 border-neutral-500 md:block"></span>
 		</div>
-		<div class="embla" use:emblaCarouselSvelte={{ options }}>
-			<div class="embla__container">
-				{#each projects as { category, details, link, preview, title }}
-					<div class="embla__slide w-full max-w-[75%] px-3 md:max-w-[50%] lg:max-w-[33.33%]">
+
+		<!-- CAROUSEL -->
+		{#await $page.data.projects}
+			<div class="embla" use:emblaCarouselSvelte={{ options, plugins }}>
+				<div class="embla__container">
+					{#each Array(dummyCardCount) as _, index}
 						<div
-							class="bg-initial Xdark:text-surface-900 card card-hover min-h-[455px] overflow-hidden rounded-none bg-neutral-100 dark:bg-surface-600"
+							class="embla__slide w-full max-w-[80%] p-3 sm:max-w-[60%] md:max-w-[40%] lg:max-w-[33.33%]"
 						>
-							{#if preview}
-								<a href={link} target="_blank">
-									<img src={preview} alt={title} class="aspect-video object-cover" />
-								</a>
-							{:else}
-								<div class="placeholder h-[212px] animate-pulse rounded-none dark:bg-slate-400" />
-							{/if}
-							<div class="space-y-4 px-4 pb-10 pt-4">
-								<h6 class="uppercase opacity-70">Industry : {category}</h6>
-								<div class="line-clamp-2">
-									<h3 class="text-xl font-bold uppercase text-primary-600">{title}</h3>
+							<div class="card bg-surface-200-700-token cursor-pointer overflow-hidden">
+								<div class="bg-surface-100-800-tokenX card relative aspect-[16/11] rounded-none">
+									<div class="placeholder absolute inset-0 h-full w-full rounded-none" />
 								</div>
-								<article class="line-clamp-4">
-									{details}
-								</article>
+								<div class="flex h-[300px] flex-col gap-5 px-4 py-8">
+									<div class="placeholder max-w-[240px]"></div>
+									<div class="placeholder max-w-[180px]"></div>
+									<div class="placeholder"></div>
+									<div class="placeholder"></div>
+									<div class="placeholder"></div>
+								</div>
 							</div>
 						</div>
-					</div>
-				{/each}
+					{/each}
+				</div>
 			</div>
-		</div>
+		{:then query}
+			{@const projects = query.items}
+			<div class="embla" use:emblaCarouselSvelte={{ options, plugins }}>
+				<div class="embla__container">
+					{#each projects as { category, details, preview, title, id }}
+						{@const imageSource = preview ? preview : 'https://storage.daedalus.codes/logo.png'}
+						<div
+							class="embla__slide w-full max-w-[80%] p-3 sm:max-w-[60%] md:max-w-[40%] lg:max-w-[33.33%]"
+						>
+							<a
+								href="/projects/{id}"
+								class="card bg-surface-100-800-token block cursor-pointer overflow-hidden dark:bg-surface-200-700-token"
+							>
+								<div class="card bg-surface-100-800-token relative aspect-[16/11] rounded-none">
+									<img
+										src={imageSource}
+										alt={title}
+										class="absolute inset-0 h-full w-full object-cover"
+									/>
+								</div>
+								<div class="flex h-[300px] flex-col gap-5 px-4 py-8">
+									<span class="text-surface-600-300-token uppercase">{category}</span>
+									<h3
+										class="line-clamp-2 text-lg font-bold uppercase text-primary-700 dark:text-primary-500 sm:text-xl"
+									>
+										{title}
+									</h3>
+									<p class="line-clamp-3 text-sm sm:text-base">
+										<CartaViewer {carta} value={details} />
+									</p>
+								</div>
+							</a>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{:catch}
+			<p>Nothing to display</p>
+		{/await}
 	</Container>
 </section>
 

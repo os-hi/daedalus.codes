@@ -4,6 +4,7 @@
 	import AvatarButton from './avatar-button.svelte';
 	import { primaryLinks, secondaryLinks } from '@utils';
 	import Icon from '@iconify/svelte';
+	import type { User } from '@types';
 	const drawerStore = getDrawerStore();
 	// const settings = { id: 'example-1' };
 	function drawerOpenLeftNavigation(): void {
@@ -13,20 +14,20 @@
 		});
 	}
 
-	const user = $page.data.user;
+	const user = $page.data.user as Promise<User | undefined>;
 </script>
 
 <AppBar
 	background="bg-surface-100-800-token"
-	padding="p-4"
+	padding="py-4 px-3 md:px-4"
 	shadow="shadow-md"
-	slotLead="place-start ml-8"
+	slotLead="place-start ml-0 md:ml-8"
 	slotDefault="place-center"
-	slotTrail="place-end mr-8"
+	slotTrail="place-end ml-0 md:mr-8"
 >
 	<svelte:fragment slot="lead">
 		<a href="/">
-			<img src="https://storage.daedalus.codes/logo.png" alt="logo" class="h-[50px]" />
+			<img src="https://storage.daedalus.codes/logo.png" alt="logo" class="h-[40px] md:h-[50px]" />
 		</a>
 	</svelte:fragment>
 	<div class="flex justify-center">
@@ -63,19 +64,20 @@
 		<a href="/search" class="text-2xl">
 			<Icon icon="iconamoon:search" />
 		</a>
-
-		{#if user}
-			<AvatarButton />
-		{:else}
-			<a
-				href="/login"
-				data-sveltekit-preload-data="hover"
-				class="hidden md:variant-filled-primary md:btn md:flex"
-			>
-				<Icon icon="material-symbols:login" class="text-2xl" />
-				<span class="hidden md:inline-block">Login</span>
-			</a>
-		{/if}
+		{#await user then user}
+			{#if user}
+				<AvatarButton {user} />
+			{:else}
+				<a
+					href="/login"
+					data-sveltekit-preload-data="hover"
+					class="hidden md:variant-filled-primary md:btn md:flex"
+				>
+					<Icon icon="material-symbols:login" class="text-2xl" />
+					<span class="hidden md:inline-block">Login</span>
+				</a>
+			{/if}
+		{/await}
 		<button class="text-2xl md:hidden" on:click={drawerOpenLeftNavigation}>
 			<Icon icon="mdi:menu" />
 		</button>
