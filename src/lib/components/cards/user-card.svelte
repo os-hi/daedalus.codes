@@ -1,62 +1,57 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import { Avatar } from '@skeletonlabs/skeleton';
-	import type { Team } from '@types';
+	import type { RecordModel } from 'pocketbase';
 
-	export let user: Team = [];
+	export let user: RecordModel;
 
-	console.log(user);
+	const { bio, x, linkedin, github, expand } = user;
+
+	const socialMedia = [
+		{ link: x ? `https://www.twitter.com/${x}` : x, iconClass: 'mdi:twitter' },
+		{
+			link: linkedin ? `https://www.linkedin.com/in/${linkedin}` : linkedin,
+			iconClass: 'cib:linkedin'
+		},
+		{
+			link: github ? `https://www.github.com/${github}` : github,
+			iconClass: 'mdi:github'
+		}
+	];
 </script>
 
-<ul class="flex flex-wrap justify-center md:flex-row">
-	{#each members as { avatar, firstName, lastName, username, bio, linkedin, github, x }}
-		{JSON.stringify(team, null, 2)}
-		{@const socialMedia = [
-			{ link: x, iconClass: 'entypo:email' },
-			{ link: linkedin, iconClass: 'cib:linkedin' },
-			{ link: github, iconClass: 'mdi:github' }
-		]}
-		<li
-			class="mb-5 flex w-full max-w-[80%] flex-col gap-3 px-10 sm:max-w-[50%] md:max-w-[33.33%] md:px-2 lg:px-10"
-		>
-			<div
-				class="relative aspect-[1/1.15] w-full overflow-hidden rounded-lg bg-surface-600
-				"
-			>
+{#if expand?.user}
+	{@const { user } = expand}
+	<div
+		class="card rounded-none border-transparent bg-transparent shadow-none ring-transparent dark:ring-transparent"
+	>
+		<a href={`/${user.username}`}>
+			<div class="flex justify-center rounded-none bg-surface-600">
 				<Avatar
-					src={avatar}
-					initials={`${firstName[0]}${lastName[0]}`}
+					src={user.avatar}
+					initials={`${user.firstName[0]}${user.lastName[0]}`}
 					background="bg-surface-600"
 					rounded="rounded-none"
 					width="w-full"
 					cursor="cursor-pointer"
-					class="absolute inset-0 h-full rounded-none object-cover"
 				/>
 			</div>
-
-			<div class="flex flex-col gap-1 text-center">
-				<p class="text-xl">{firstName} {lastName}</p>
-				{#if bio}
-					<p>{bio || ''}</p>
-				{:else}
-					<div class="bg-surface-600X rounded-full bg-transparent py-3" />
+			<div class="flex flex-col gap-1 py-4 text-center">
+				<p class="text-xl font-bold">{user.firstName} {user.lastName}</p>
+				<p class="text-sm font-light">{bio || ''}</p>
+			</div>
+		</a>
+		<div class="card-footer flex items-center justify-center gap-2">
+			<a href={`mailto:${user.email}`}>
+				<Icon icon="mdi:at" width="24" />
+			</a>
+			{#each socialMedia as { link, iconClass }}
+				{#if link}
+					<a href={link}>
+						<Icon icon={iconClass} width="24" />
+					</a>
 				{/if}
-			</div>
-			<div class="flex justify-evenly gap-3">
-				{#each socialMedia as { link, iconClass }}
-					{#if link}
-						<a href={link} target="_blank" rel="noreferrer">
-							<Icon icon={iconClass} class="h-14 w-14" />
-						</a>
-						<!-- {:else} -->
-						<!-- <div class="aspect-square rounded-full bg-surface-600 p-7 py-1" /> -->
-					{/if}
-				{/each}
-				<!-- <div class="bg-surface-600 py-1 p-7 aspect-square rounded-full" />	 -->
-				<!-- <div class="bg-surface-600 py-1 p-7 aspect-square rounded-full" />	 -->
-				<!-- <div class="bg-surface-600 py-1 p-7 aspect-square rounded-full" /> -->
-			</div>
-		</li>
-	{/each}
-</ul>
-<!-- {/if} -->
+			{/each}
+		</div>
+	</div>
+{/if}
